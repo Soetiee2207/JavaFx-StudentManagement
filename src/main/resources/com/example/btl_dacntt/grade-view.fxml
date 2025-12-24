@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.btl_dacntt.controller.GradeController"
+            prefHeight="600.0" prefWidth="900.0">
+
+    <padding>
+        <Insets bottom="10.0" left="20.0" right="20.0" top="20.0" />
+    </padding>
+
+    <center>
+        <VBox spacing="10.0">
+            <Label text="QUẢN LÝ ĐIỂM SỐ &amp; ĐĂNG KÝ HỌC" textFill="#2c3e50">
+                <font><Font name="System Bold" size="20.0" /></font>
+            </Label>
+
+            <TableView fx:id="tableGrade" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colStudentId" prefWidth="90.0" text="Mã SV" />
+                    <TableColumn fx:id="colStudentName" prefWidth="150.0" text="Tên Sinh Viên" />
+                    <TableColumn fx:id="colStudentType" prefWidth="100.0" text="Hệ Đào Tạo" />
+                    <TableColumn fx:id="colSubjectName" prefWidth="150.0" text="Môn Học" />
+                    <TableColumn fx:id="colScoreCC" prefWidth="70.0" text="CC" style="-fx-alignment: CENTER;"/>
+                    <TableColumn fx:id="colScoreMid" prefWidth="70.0" text="GK" style="-fx-alignment: CENTER;"/>
+                    <TableColumn fx:id="colScoreFinal" prefWidth="70.0" text="CK" style="-fx-alignment: CENTER;"/>
+                    <TableColumn fx:id="colScoreTotal" prefWidth="80.0" text="Tổng kết" style="-fx-font-weight: bold; -fx-alignment: CENTER; -fx-text-fill: #c0392b;"/>
+                </columns>
+                <columnResizePolicy>
+                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                </columnResizePolicy>
+            </TableView>
+
+            <HBox spacing="20.0" style="-fx-background-color: #ecf0f1; -fx-background-radius: 10; -fx-padding: 15;">
+
+                <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+                    <Label text="Thông tin đăng ký:" style="-fx-font-weight: bold;"/>
+                    <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <TextField fx:id="txtStudentId" promptText="Mã Sinh viên" prefWidth="120"/>
+                        <Label fx:id="lblStudentName" text="..." textFill="#7f8c8d" />
+                        <Label fx:id="lblStudentType" visible="false" managed="false"/>
+                    </HBox>
+
+                    <ComboBox fx:id="cbSubject" promptText="Chọn Môn Học" prefWidth="250.0" />
+
+                    <HBox spacing="10.0">
+                        <Button onAction="#handleAdd" text="Thêm / Đăng Ký" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold;"/>
+                        <Button onAction="#handleDelete" text="Xóa" style="-fx-background-color: #c0392b; -fx-text-fill: white;"/>
+                        <Button onAction="#handleUpdate" text="Cập nhật điểm" style="-fx-background-color: #f39c12; -fx-text-fill: white;"/>
+                        <Button onAction="#clearForm" text="Làm mới" />
+                    </HBox>
+                </VBox>
+
+                <VBox style="-fx-border-color: #bdc3c7; -fx-border-width: 0 0 0 1;" prefWidth="1"/>
+
+                <VBox spacing="10.0" prefWidth="250.0">
+                    <Label text="Nhập điểm thành phần:" style="-fx-font-weight: bold;"/>
+                    <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <Label text="CC:" prefWidth="30"/>
+                        <TextField fx:id="txtScoreCC" promptText="0-10" />
+                    </HBox>
+                    <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <Label text="GK:" prefWidth="30"/>
+                        <TextField fx:id="txtScoreMid" promptText="0-10" />
+                    </HBox>
+                    <HBox spacing="10.0" alignment="CENTER_LEFT">
+                        <Label text="CK:" prefWidth="30"/>
+                        <TextField fx:id="txtScoreFinal" promptText="0-10" />
+                    </HBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </center>
+
+    <bottom>
+        <VBox>
+            <BorderPane.margin>
+                <Insets top="15.0"/>
+            </BorderPane.margin>
+            <HBox spacing="10.0" alignment="CENTER_LEFT" style="-fx-background-color: #dfe6e9; -fx-padding: 10; -fx-background-radius: 5;">
+                <Label text="🔍 Tìm kiếm:" textFill="#2d3436">
+                    <font><Font name="System Bold" size="14.0"/></font>
+                </Label>
+                <TextField fx:id="txtSearch" promptText="Nhập Mã SV hoặc Tên Môn để tìm..." HBox.hgrow="ALWAYS"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+</BorderPane>

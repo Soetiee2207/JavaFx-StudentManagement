@@ -1,0 +1,333 @@
+================================================================================
+                    BÁO CÁO DỰ ÁN CÔNG NGHỆ THÔNG TIN
+                    HỆ THỐNG QUẢN LÝ SINH VIÊN (BTL_DACNTT)
+================================================================================
+
+================================================================================
+4.2 FRONT END
+================================================================================
+
+4.2.1 Tổng quan - Công nghệ sử dụng
+--------------------------------------------------------------------------------
+
+1. JavaFX 21.0.6
+   - Thư viện UI chính để xây dựng giao diện người dùng desktop
+   - Các module đang sử dụng:
+     + javafx-controls: Các component UI cơ bản
+       * Button: Nút bấm
+       * TextField: Ô nhập văn bản
+       * PasswordField: Ô nhập mật khẩu
+       * Label: Nhãn hiển thị
+       * TableView, TableColumn: Bảng dữ liệu
+       * ComboBox: Danh sách thả xuống
+       * DatePicker: Chọn ngày
+       * Separator: Đường phân cách
+     + javafx-fxml: Định nghĩa giao diện bằng file FXML
+     + Layout containers:
+       * VBox: Sắp xếp theo chiều dọc
+       * HBox: Sắp xếp theo chiều ngang
+       * BorderPane: Layout với 5 vùng (top, bottom, left, right, center)
+       * AnchorPane: Layout với anchor constraints
+     + Chart components:
+       * PieChart: Biểu đồ tròn (sử dụng trong home-view.fxml)
+
+2. FXML Views (Các màn hình giao diện)
+   - login-view.fxml: Màn hình đăng nhập
+   - register-view.fxml: Màn hình đăng ký tài khoản
+   - dashboard-view.fxml: Màn hình tổng quan dashboard
+   - home-view.fxml: Màn hình trang chủ (có biểu đồ PieChart)
+   - student-view.fxml: Màn hình quản lý sinh viên
+   - teacher-view.fxml: Màn hình quản lý giáo viên
+   - subject-view.fxml: Màn hình quản lý môn học
+   - grade-view.fxml: Màn hình quản lý điểm
+
+================================================================================
+4.3 BACKEND
+================================================================================
+
+4.3.1 Thiết kế cơ sở dữ liệu
+--------------------------------------------------------------------------------
+
+4.3.1.1 Mô hình UML - Sơ đồ ERD (Entity Relationship Diagram)
+--------------------------------------------------------------------------------
+
++-------------------+       +-------------------+       +-------------------+
+|      USERS        |       |     TEACHERS      |       |     STUDENTS      |
++-------------------+       +-------------------+       +-------------------+
+| PK id (INT)       |       | PK id (INT)       |       | PK id (INT)       |
+| username (50)     |       | UK teacher_id (20)|       | UK student_id (20)|
+| password (255)    |  1..1 | full_name (100)   |       | full_name (100)   |
+| role_id (INT)     |<----->| email (100)       |       | dob (DATE)        |
+| FK teacher_id (20)|       +-------------------+       | class_id (50)     |
++-------------------+                                   | type (20)         |
+                                                        +-------------------+
+                                                               |
+                                                               | 1
+                                                               |
+                                                               v n
+			+-------------------+       +-------------------+
+			|     SUBJECTS      |       |      GRADES       |
+			+-------------------+       +-------------------+
+			| PK id (INT)       |       | PK id (INT)       |
+			| UK subject_id (20)| 1..n  | FK student_id (20)|
+			| subject_name (100)|<----->| FK subject_id (20)|
+			| credits (INT)     |       | score_cc (DOUBLE) |
+			+-------------------+       | score_gk (DOUBLE) |
+                            			    | score_ck (DOUBLE) |
+                            			    | score_tk (DOUBLE) |
+                            			    +-------------------+
+
+MÔ TẢ CÁC BẢNG:
+----------------
+
+1. BẢNG USERS (Người dùng)
+   +---------------+--------------+----------------------------------------------+
+   | Tên cột       | Kiểu dữ liệu | Mô tả                                        |
+   +---------------+--------------+----------------------------------------------+
+   | id            | INT          | Khóa chính, tự tăng                          |
+   | username      | VARCHAR(50)  | Tên đăng nhập (UNIQUE)                       |
+   | password      | VARCHAR(255) | Mật khẩu (BCrypt hash)                       |
+   | role_id       | INT          | Vai trò: 1=Admin, 2=Teacher                  |
+   | teacher_id    | VARCHAR(20)  | Khóa ngoại liên kết đến bảng teachers        |
+   +---------------+--------------+----------------------------------------------+
+
+2. BẢNG TEACHERS (Giáo viên)
+   +---------------+--------------+----------------------------------------------+
+   | Tên cột       | Kiểu dữ liệu | Mô tả                                        |
+   +---------------+--------------+----------------------------------------------+
+   | id            | INT          | Khóa chính, tự tăng                          |
+   | teacher_id    | VARCHAR(20)  | Mã giáo viên (UNIQUE)                        |
+   | full_name     | VARCHAR(100) | Họ tên giáo viên                             |
+   | email         | VARCHAR(100) | Email                                        |
+   +---------------+--------------+----------------------------------------------+
+
+3. BẢNG STUDENTS (Sinh viên)
+   +---------------+--------------+----------------------------------------------+
+   | Tên cột       | Kiểu dữ liệu | Mô tả                                        |
+   +---------------+--------------+----------------------------------------------+
+   | id            | INT          | Khóa chính, tự tăng                          |
+   | student_id    | VARCHAR(20)  | Mã sinh viên (UNIQUE)                        |
+   | full_name     | VARCHAR(100) | Họ tên sinh viên                             |
+   | dob           | DATE         | Ngày sinh                                    |
+   | class_id      | VARCHAR(50)  | Mã lớp                                       |
+   | type          | VARCHAR(20)  | Loại SV: Regular (chính quy), InService (tại chức) |
+   +---------------+--------------+----------------------------------------------+
+
+4. BẢNG SUBJECTS (Môn học)
+   +---------------+--------------+----------------------------------------------+
+   | Tên cột       | Kiểu dữ liệu | Mô tả                                        |
+   +---------------+--------------+----------------------------------------------+
+   | id            | INT          | Khóa chính, tự tăng                          |
+   | subject_id    | VARCHAR(20)  | Mã môn học (UNIQUE)                          |
+   | subject_name  | VARCHAR(100) | Tên môn học                                  |
+   | credits       | INT          | Số tín chỉ                                   |
+   +---------------+--------------+----------------------------------------------+
+
+5. BẢNG GRADES (Điểm)
+   +---------------+--------------+----------------------------------------------+
+   | Tên cột       | Kiểu dữ liệu | Mô tả                                        |
+   +---------------+--------------+----------------------------------------------+
+   | id            | INT          | Khóa chính, tự tăng                          |
+   | student_id    | VARCHAR(20)  | Khóa ngoại - Mã sinh viên                    |
+   | subject_id    | VARCHAR(20)  | Khóa ngoại - Mã môn học                      |
+   | score_cc      | DOUBLE       | Điểm chuyên cần                              |
+   | score_gk      | DOUBLE       | Điểm giữa kỳ                                 |
+   | score_ck      | DOUBLE       | Điểm cuối kỳ                                 |
+   | score_tk      | DOUBLE       | Điểm tổng kết                                |
+   +---------------+--------------+----------------------------------------------+
+
+MỐI QUAN HỆ GIỮA CÁC BẢNG:
+---------------------------
+1. users.teacher_id -> teachers.teacher_id (FOREIGN KEY, ON DELETE SET NULL)
+2. grades.student_id -> students.student_id (FOREIGN KEY, ON DELETE CASCADE)
+3. grades.subject_id -> subjects.subject_id (FOREIGN KEY, ON DELETE CASCADE)
+4. UNIQUE constraint trên (student_id, subject_id) trong bảng grades
+
+--------------------------------------------------------------------------------
+
+4.3.2 Công nghệ sử dụng - Backend
+--------------------------------------------------------------------------------
+
+1. Java 21
+   - Ngôn ngữ lập trình chính
+   - JDK 21 LTS version
+   - Sử dụng Java Module System (module-info.java)
+
+2. Maven
+   - Build tool và quản lý dependency
+   - Phiên bản Maven Compiler Plugin: 3.13.0
+   - JavaFX Maven Plugin: 0.0.8
+
+3. MySQL (MariaDB 10.4.32)
+   - Hệ quản trị cơ sở dữ liệu
+   - Database name: quanlysinhvien
+   - MySQL Connector/J 8.0.33
+   - Sử dụng JDBC API (java.sql.*)
+     + Connection: Kết nối database
+     + PreparedStatement: Thực thi câu lệnh SQL
+     + ResultSet: Đọc kết quả truy vấn
+
+4. Lombok 1.18.30
+   - Thư viện annotation processor
+   - Tự động sinh getter, setter, constructor
+   - Annotations đang sử dụng:
+     + @Data: Sinh getter/setter/toString/equals/hashCode
+     + @AllArgsConstructor: Constructor với tất cả tham số
+     + @NoArgsConstructor: Constructor không tham số
+   - Áp dụng tại các model: User, Teacher, Subject, Grade, Student
+
+5. jBCrypt 0.4
+   - Thư viện mã hóa mật khẩu
+   - Sử dụng thuật toán BCrypt với workload = 12
+   - Triển khai trong: PasswordUtils.java
+   - Các hàm sử dụng:
+     + BCrypt.gensalt(): Tạo salt
+     + BCrypt.hashpw(): Hash mật khẩu
+     + BCrypt.checkpw(): Xác thực mật khẩu
+
+DESIGN PATTERNS ĐƯỢC TRIỂN KHAI:
+---------------------------------
+
+1. Singleton Pattern (Đã triển khai)
+   - File: DatabaseConnection.java
+   - Mô tả: Đảm bảo chỉ có duy nhất một instance kết nối database
+   - Cách hoạt động:
+     + Private constructor
+     + Static instance variable
+     + getInstance() method trả về instance duy nhất
+     + Tự động tạo lại connection nếu bị đóng
+
+2. Factory Method Pattern (Đã triển khai)
+   - File: StudentFactory.java
+   - Mô tả: Tạo đối tượng Student dựa trên loại
+   - Các loại sinh viên:
+     + "Regular" -> RegularStudent (chính quy)
+     + "InService" -> InServiceStudent (tại chức)
+   - Student là abstract class với method trừu tượng:
+     + calculateAverage(cc, gk, ck): Tính điểm trung bình
+     + displayInfo(): Hiển thị thông tin
+
+3. MVC Pattern (Model-View-Controller) (Đã triển khai)
+   - Model: package model/ (User, Student, Teacher, Subject, Grade)
+   - View: FXML files trong resources/
+   - Controller: package controller/ (8 controller classes)
+
+4. DAO Pattern (Data Access Object) (Đã triển khai)
+   - Package: dao/
+   - Các class:
+     + UserDAO.java: Truy cập dữ liệu người dùng
+     + StudentDAO.java: Truy cập dữ liệu sinh viên
+     + TeacherDAO.java: Truy cập dữ liệu giáo viên
+     + SubjectDAO.java: Truy cập dữ liệu môn học
+     + GradeDAO.java: Truy cập dữ liệu điểm
+
+--------------------------------------------------------------------------------
+
+4.3.3 Tổ chức và phát triển ứng dụng
+--------------------------------------------------------------------------------
+
+4.3.3.1 Cấu trúc thư mục
+--------------------------------------------------------------------------------
+
+BTL_DACNTT/
+│
+├── pom.xml                          # Maven configuration file
+├── mvnw, mvnw.cmd                   # Maven wrapper scripts
+├── database.sql                     # SQL script tạo database
+├── quanlysinhvien.sql               # SQL dump đầy đủ với data mẫu
+├── database_migrate_password.sql    # Script migrate password sang BCrypt
+│
+├── src/
+│   └── main/
+│       ├── java/
+│       │   ├── module-info.java     # Java module descriptor
+│       │   └── com/
+│       │       └── example/
+│       │           └── btl_dacntt/
+│       │               │
+│       │               ├── MainApp.java           # Entry point của ứng dụng
+│       │               │
+│       │               ├── controller/            # Controllers (MVC)
+│       │               │   ├── LoginController.java
+│       │               │   ├── RegisterController.java
+│       │               │   ├── DashboardController.java
+│       │               │   ├── HomeController.java
+│       │               │   ├── StudentController.java
+│       │               │   ├── TeacherController.java
+│       │               │   ├── SubjectController.java
+│       │               │   └── GradeController.java
+│       │               │
+│       │               ├── dao/                   # Data Access Objects
+│       │               │   ├── UserDAO.java
+│       │               │   ├── StudentDAO.java
+│       │               │   ├── TeacherDAO.java
+│       │               │   ├── SubjectDAO.java
+│       │               │   └── GradeDAO.java
+│       │               │
+│       │               ├── model/                 # Entity classes
+│       │               │   ├── User.java
+│       │               │   ├── Student.java       # Abstract class
+│       │               │   ├── RegularStudent.java
+│       │               │   ├── InServiceStudent.java
+│       │               │   ├── StudentFactory.java
+│       │               │   ├── Teacher.java
+│       │               │   ├── Subject.java
+│       │               │   └── Grade.java
+│       │               │
+│       │               └── utils/                 # Utility classes
+│       │                   ├── DatabaseConnection.java  # Singleton DB Connection
+│       │                   └── PasswordUtils.java       # BCrypt password utility
+│       │
+│       └── resources/
+│           └── com/
+│               └── example/
+│                   └── btl_dacntt/
+│                       ├── login-view.fxml        # Màn hình đăng nhập
+│                       ├── register-view.fxml     # Màn hình đăng ký
+│                       ├── dashboard-view.fxml    # Màn hình dashboard
+│                       ├── home-view.fxml         # Màn hình trang chủ
+│                       ├── student-view.fxml      # Màn hình quản lý SV
+│                       ├── teacher-view.fxml      # Màn hình quản lý GV
+│                       ├── subject-view.fxml      # Màn hình quản lý môn học
+│                       └── grade-view.fxml        # Màn hình quản lý điểm
+│
+├── target/                          # Thư mục build output
+│
+└── .idea/                           # IntelliJ IDEA project files
+
+--------------------------------------------------------------------------------
+
+MÔ TẢ CHI TIẾT CÁC PACKAGE:
+---------------------------
+
+1. Package controller/
+   - Chứa các Controller class xử lý logic UI
+   - Mỗi Controller tương ứng với một màn hình FXML
+   - Xử lý sự kiện người dùng (click button, nhập dữ liệu)
+   - Gọi DAO để thao tác dữ liệu với database
+
+2. Package dao/
+   - Chứa các Data Access Object
+   - Thực hiện các thao tác CRUD với database
+   - Sử dụng JDBC (PreparedStatement, ResultSet) để kết nối MySQL
+   - Lấy connection từ DatabaseConnection singleton
+
+3. Package model/
+   - Chứa các Entity class (POJO)
+   - Sử dụng Lombok annotations (@Data, @AllArgsConstructor, @NoArgsConstructor)
+   - Student là abstract class với 2 subclass:
+     + RegularStudent: Sinh viên chính quy
+     + InServiceStudent: Sinh viên tại chức
+   - StudentFactory: Factory pattern tạo đối tượng Student theo loại
+
+4. Package utils/
+   - DatabaseConnection: Singleton pattern quản lý kết nối MySQL
+   - PasswordUtils: Mã hóa và kiểm tra mật khẩu BCrypt
+
+5. Thư mục resources/
+   - Chứa các file FXML định nghĩa giao diện
+   - Mỗi file FXML được liên kết với một Controller tương ứng
+
+================================================================================
+                              HẾT BÁO CÁO
+================================================================================

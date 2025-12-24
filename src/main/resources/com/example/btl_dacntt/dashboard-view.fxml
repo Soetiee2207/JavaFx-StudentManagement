@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="mainBorderPane"
+            prefHeight="600.0"
+            prefWidth="900.0"
+            xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.btl_dacntt.controller.DashboardController">
+
+    <left>
+        <VBox spacing="10.0"
+              style="-fx-background-color: #2c3e50;"
+              BorderPane.alignment="CENTER">
+            <padding>
+                <Insets
+                        bottom="20.0"
+                        left="10.0"
+                        right="10.0"
+                        top="20.0" />
+            </padding>
+
+            <Label
+                    text="EMS SYSTEM"
+                    textFill="WHITE">
+                <font>
+                    <Font
+                            name="System Bold"
+                            size="20.0" />
+                </font>
+                <VBox.margin>
+                    <Insets
+                            bottom="20.0"
+                            left="10.0" />
+                </VBox.margin>
+            </Label>
+
+            <Button
+                    maxWidth="Infinity"
+                    mnemonicParsing="false"
+                    onAction="#showHome"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="🏠  Trang chủ">
+                <font><Font size="14.0" /></font>
+            </Button>
+
+            <Button
+                    maxWidth="Infinity"
+                    mnemonicParsing="false"
+                    onAction="#showStudents"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="👨‍🎓  Quản lý Sinh Viên">
+                <font><Font size="14.0" /></font>
+            </Button>
+
+            <Button
+                    fx:id="btn_teacher"
+                    maxWidth="Infinity"
+                    mnemonicParsing="false"
+                    onAction="#showTeachers"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="👨‍🏫  Quản lý Giáo Viên">
+                <font><Font size="14.0" /></font>
+            </Button>
+
+            <Button
+                    fx:id="btn_subject"
+                    maxWidth="Infinity"
+                    mnemonicParsing="false"
+                    onAction="#showSubjects"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="📚  Môn học">
+                <font><Font size="14.0" /></font>
+            </Button>
+
+            <Button
+                    maxWidth="Infinity"
+                    mnemonicParsing="false"
+                    onAction="#showGrades"
+                    style="-fx-background-color: transparent; -fx-text-fill: white; -fx-alignment: CENTER_LEFT; -fx-cursor: hand;" text="📊  Bảng điểm">
+                <font><Font size="14.0" /></font>
+            </Button>
+
+            <VBox VBox.vgrow="ALWAYS" />
+
+            <Button
+                    maxWidth="Infinity"
+                    mnemonicParsing="false"
+                    onAction="#logout"
+                    style="-fx-background-color: #c0392b; -fx-text-fill: white; -fx-cursor: hand;" text="Đăng xuất" />
+        </VBox>
+    </left>
+
+    <top>
+        <VBox style="-fx-background-color: #ecf0f1; -fx-border-color: #bdc3c7; -fx-border-width: 0 0 1 0;">
+            <padding>
+                <Insets
+                        bottom="10.0"
+                        left="20.0"
+                        right="20.0"
+                        top="10.0" />
+            </padding>
+            <Label
+                    fx:id="lblWelcome"
+                   text="Xin chào, Admin"
+                    textFill="#7f8c8d">
+                <font>
+                    <Font name="System Italic" size="14.0" />
+                </font>
+            </Label>
+        </VBox>
+    </top>
+
+    <center>
+        <Label
+                text="Chào mừng đến với hệ thống quản lý đào tạo!"
+               textFill="#95a5a6" BorderPane.alignment="CENTER">
+            <font>
+                <Font size="24.0" />
+            </font>
+        </Label>
+    </center>
+</BorderPane>
