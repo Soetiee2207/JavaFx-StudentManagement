@@ -42,7 +42,6 @@ public class TeacherDAO {
             conn = DatabaseConnection.getInstance().getConnection();
             conn.setAutoCommit(false);
 
-            // Bước 1: Thêm giáo viên vào bảng teachers trước
             String sqlTeacher = "INSERT INTO teachers (teacher_id, full_name, email) VALUES (?, ?, ?)";
             pstmtTeacher = conn.prepareStatement(sqlTeacher);
             pstmtTeacher.setString(1, t.getTeacherId());
@@ -55,7 +54,6 @@ public class TeacherDAO {
                 return false;
             }
 
-            // Bước 2: Hash password và thêm vào bảng users
             String hashedPassword = PasswordUtils.hashPassword(t.getPassword());
             
             String sqlUser = "INSERT INTO users (username, password, role_id, teacher_id) VALUES (?, ?, ?, ?)";
